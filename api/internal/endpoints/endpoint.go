@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -54,6 +55,15 @@ func Handle(action EndpointHandler) func(w http.ResponseWriter, r *http.Request)
 		response, err := action(r)
 		if err != nil {
 			response = getErrorResponse(err)
+		}
+		switch t := response.Content.(type) {
+		case api.Serializable:
+			eTag, err := t.Serialize()
+			if err != nil {
+				log.Printf("cannot generate the ETag")
+			} else {
+				w.Header().Set("ETag", eTag)
+			}
 		}
 		w.WriteHeader(response.StatusCode)
 		_ = json.NewEncoder(w).Encode(response)

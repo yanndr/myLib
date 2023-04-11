@@ -1,5 +1,11 @@
 package api
 
+import (
+	"crypto/md5"
+	"encoding/gob"
+	"fmt"
+)
+
 const (
 	AuthorsPath = "/authors"
 	BooksPath   = "/books"
@@ -8,6 +14,20 @@ const (
 // Information represents the information about the API.
 type Information struct {
 	APIVersion string `json:"api_version"`
+}
+
+type Serializable interface {
+	Serialize() (string, error)
+}
+
+func Serialize(data interface{}) (string, error) {
+	writer := md5.New()
+	e := gob.NewEncoder(writer)
+	err := e.Encode(data)
+	if err != nil {
+		return "", fmt.Errorf(`failed gob Encode :%w`, err)
+	}
+	return fmt.Sprintf("%x", writer.Sum(nil)), nil
 }
 
 // AuthorBase represents the base information for an author.
@@ -34,4 +54,8 @@ type PatchAuthorRequest struct {
 	ModifiedLastName   bool `json:"modified_last_name"`
 	ModifiedFirstName  bool `json:"modified_first_name"`
 	ModifiedMiddleName bool `json:"modified_middle_name"`
+}
+
+func (a Author) Serialize() (string, error) {
+	return Serialize(a)
 }

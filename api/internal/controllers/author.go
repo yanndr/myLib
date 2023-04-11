@@ -89,12 +89,25 @@ func (c *AuthorController) Update(r *http.Request) (api.Response, error) {
 	}
 
 	var author api.CreateUpdateAuthorRequest
-
 	if err = json.NewDecoder(r.Body).Decode(&author); err != nil {
 		return api.Response{}, api.NewBadFormatErr(err.Error())
 	}
 
-	err = c.AuthorService.Update(r.Context(), id, author.AuthorBase)
+	ctx := r.Context()
+	eTag := r.Header.Get("If-Match")
+	if eTag != "" {
+		existing, err := c.AuthorService.GetById(ctx, id)
+		if err != nil {
+			return api.Response{}, err
+		}
+		existingEtag, err := existing.Serialize()
+
+		if existingEtag != eTag {
+			return api.Response{}, api.NewPreconditionFailError()
+		}
+	}
+
+	err = c.AuthorService.Update(ctx, id, author.AuthorBase)
 	if err != nil {
 		return handleServiceError(err)
 	}

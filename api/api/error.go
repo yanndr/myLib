@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	UnexpectedErrorCode    = "ERR-UNEXPECTED"
-	DuplicateErrorCode     = "ERR-DUPLICATE"
-	BadFormatErrorCode     = "ERR-BAD-FORMAT"
-	NotFoundErrorCode      = "ERR-NOT-FOUND"
-	UnexpectedErrorMessage = "An unexpected error occurred."
+	UnexpectedErrorCode         = "ERR-UNEXPECTED"
+	DuplicateErrorCode          = "ERR-DUPLICATE"
+	BadFormatErrorCode          = "ERR-BAD-FORMAT"
+	NotFoundErrorCode           = "ERR-NOT-FOUND"
+	PreconditionFailedErrorCode = "ERR-PRE-FAILED"
+	UnexpectedErrorMessage      = "An unexpected error occurred."
 )
 
 // StatusErr is the API error that contains all the information for the model.ResponseAPI
@@ -49,5 +50,13 @@ func NewNotFoundErr(details string) StatusErr {
 		ErrorCode:    NotFoundErrorCode,
 		ErrorMessage: "The requested resource was not found",
 		ErrorDetails: details,
+	}
+}
+
+func NewPreconditionFailError() StatusErr {
+	return StatusErr{
+		StatusCode:   http.StatusPreconditionFailed,
+		ErrorCode:    PreconditionFailedErrorCode,
+		ErrorMessage: "Precondition failed",
 	}
 }
