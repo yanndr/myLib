@@ -28,6 +28,22 @@ func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (int
 	return id, err
 }
 
+const getAuthorById = `-- name: GetAuthorById :one
+SELECT id, first_name, last_name, middle_name FROM authors WHERE id = ?
+`
+
+func (q *Queries) GetAuthorById(ctx context.Context, id int64) (Author, error) {
+	row := q.db.QueryRowContext(ctx, getAuthorById, id)
+	var i Author
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.MiddleName,
+	)
+	return i, err
+}
+
 const getUniqueAuthor = `-- name: GetUniqueAuthor :one
 SELECT id, first_name, last_name, middle_name FROM authors WHERE last_name=? AND first_name=? AND middle_name=?
 `

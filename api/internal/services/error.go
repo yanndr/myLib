@@ -37,3 +37,21 @@ func NewValidationErr(entityType string, err string) ValidationErr {
 func (e ValidationErr) Error() string {
 	return fmt.Sprintf("validation error: entity %s is invalid: %s", e.entityType, e.reason)
 }
+
+// NotFoundErr represents an error when requesting an item that doesn't exist.
+type NotFoundErr struct {
+	entityType string
+	entityID   any
+}
+
+// NewNotFoundErr returns a new NotFoundErr error.
+func NewNotFoundErr(entityType string, entityID any) NotFoundErr {
+	return NotFoundErr{
+		entityID:   entityID,
+		entityType: entityType,
+	}
+}
+
+func (e NotFoundErr) Error() string {
+	return fmt.Sprintf("error: entity %v of type %s was not found", e.entityID, e.entityType)
+}

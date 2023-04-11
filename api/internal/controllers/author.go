@@ -7,7 +7,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"net/http"
+	"strconv"
 )
 
 // AuthorController represents all the endpoints.EndpointHandler related to Author.
@@ -33,6 +35,22 @@ func (c *AuthorController) Create(r *http.Request) (model.APIResponse, error) {
 
 	location := fmt.Sprintf("%v/%v", c.BasePath, id)
 	return model.NewCreatedResponse(location), nil
+}
+
+// Get is the endpoint action for the GET method to retrieve an author.
+func (c *AuthorController) Get(r *http.Request) (model.APIResponse, error) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return model.APIResponse{}, api.NewBadFormatErr(err.Error())
+	}
+
+	author, err := c.AuthorService.GetById(r.Context(), id)
+	if err != nil {
+		return handleServiceError(err)
+	}
+
+	return model.NewContentResponse(author), nil
 }
 
 func handleServiceError(err error) (model.APIResponse, error) {

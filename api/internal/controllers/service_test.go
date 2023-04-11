@@ -50,6 +50,21 @@ func (mr *MockAuthorServiceMockRecorder) Create(ctx, author interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAuthorService)(nil).Create), ctx, author)
 }
 
+// GetById mocks base method.
+func (m *MockAuthorService) GetById(ctx context.Context, id int64) (model.Author, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetById", ctx, id)
+	ret0, _ := ret[0].(model.Author)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetById indicates an expected call of GetById.
+func (mr *MockAuthorServiceMockRecorder) GetById(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockAuthorService)(nil).GetById), ctx, id)
+}
+
 // MockLogger is a mock of Logger interface.
 type MockLogger struct {
 	ctrl     *gomock.Controller

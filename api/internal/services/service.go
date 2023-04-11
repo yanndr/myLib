@@ -13,6 +13,8 @@ import (
 type AuthorService interface {
 	// Create a new author.
 	Create(ctx context.Context, author model.AuthorBase) (int64, error)
+	// GetById returns a model.Author based on its id.
+	GetById(ctx context.Context, id int64) (model.Author, error)
 }
 
 // Logger interface represents the method required for a logger.
@@ -72,6 +74,29 @@ func (s *authorService) Create(ctx context.Context, author model.AuthorBase) (in
 	return id, nil
 }
 
+func (s *authorService) GetById(ctx context.Context, id int64) (model.Author, error) {
+	var author model.Author
+	err := s.transaction(func(q *db.Queries) error {
+
+		dbAuthor, err := q.GetAuthorById(ctx, id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return NewNotFoundErr("Author", id)
+			}
+			s.logger.Printf("GetById - query call error %s", err)
+			return fmt.Errorf("get author by id error:  %w", err)
+		}
+		author = toApiAuthor(dbAuthor)
+
+		return nil
+	})
+	if err != nil {
+		return model.Author{}, err
+	}
+
+	return author, nil
+}
+
 func (s *authorService) transaction(action func(queries *db.Queries) error) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
@@ -108,4 +133,15 @@ func toGetUniqueAuthorParams(author model.AuthorBase) db.GetUniqueAuthorParams {
 		MiddleName: author.MiddleName,
 	}
 	return params
+}
+
+func toApiAuthor(author db.Author) model.Author {
+	return model.Author{
+		ID: author.ID,
+		AuthorBase: model.AuthorBase{
+			LastName:   author.LastName,
+			FirstName:  author.FirstName,
+			MiddleName: author.MiddleName,
+		},
+	}
 }

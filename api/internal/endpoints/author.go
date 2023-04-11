@@ -18,19 +18,22 @@ func newAuthorsEndpoint(parentPath string, authorSvc services.AuthorService) *Ro
 			http.MethodGet:  notImplementedHandler,
 			http.MethodPost: c.Create,
 		},
-		SubRoutes: []*Route{&authorEndpoint},
+		SubRoutes: []*Route{newAuthorEndpoint(c)},
 	}
 }
 
-var authorEndpoint = Route{
-	Pattern: "/{id}",
-	Actions: map[string]EndpointHandler{
-		http.MethodGet:    notImplementedHandler,
-		http.MethodPut:    notImplementedHandler,
-		http.MethodPatch:  notImplementedHandler,
-		http.MethodDelete: notImplementedHandler,
-	},
-	SubRoutes: []*Route{&authorBooksEndpoint},
+func newAuthorEndpoint(c controllers.AuthorController) *Route {
+	return &Route{
+		Pattern: "/{id}",
+		Actions: map[string]EndpointHandler{
+			http.MethodGet:    c.Get,
+			http.MethodPut:    notImplementedHandler,
+			http.MethodPatch:  notImplementedHandler,
+			http.MethodDelete: notImplementedHandler,
+		},
+		SubRoutes: []*Route{&authorBooksEndpoint},
+	}
+
 }
 
 var authorBooksEndpoint = Route{
