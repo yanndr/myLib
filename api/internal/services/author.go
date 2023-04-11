@@ -24,17 +24,6 @@ type AuthorService interface {
 	PartialUpdate(ctx context.Context, id int64, patchRequest api.PatchAuthorRequest) error
 }
 
-// Logger interface represents the method required for a logger.
-type Logger interface {
-	Printf(format string, args ...interface{})
-}
-
-// Validator interface represents the methods required for a validator.
-type Validator interface {
-	Struct(interface{}) error
-	StructCtx(ctx context.Context, s interface{}) (err error)
-}
-
 type authorService struct {
 	service
 }

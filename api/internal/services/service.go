@@ -2,10 +2,22 @@ package services
 
 import (
 	"api/internal/db"
+	"context"
 	"database/sql"
 	"fmt"
 	"sync"
 )
+
+// Logger interface represents the method required for a logger.
+type Logger interface {
+	Printf(format string, args ...interface{})
+}
+
+// Validator interface represents the methods required for a validator.
+type Validator interface {
+	Struct(interface{}) error
+	StructCtx(ctx context.Context, s interface{}) (err error)
+}
 
 type service struct {
 	db        *sql.DB
