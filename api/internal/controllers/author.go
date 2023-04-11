@@ -69,6 +69,16 @@ func (c *AuthorController) Delete(r *http.Request) (model.APIResponse, error) {
 	return model.NewEmptyResponse(), nil
 }
 
+// GetAll is the endpoint action for the GET method to retrieve the list of authors.
+func (c *AuthorController) GetAll(r *http.Request) (model.APIResponse, error) {
+	authors, err := c.AuthorService.GetAll(r.Context())
+	if err != nil {
+		return handleServiceError(err)
+	}
+
+	return model.NewContentResponse(authors), nil
+}
+
 func handleServiceError(err error) (model.APIResponse, error) {
 	if errors.As(err, &services.DuplicateErr{}) {
 		return model.APIResponse{}, api.NewDuplicateErr(err.Error())

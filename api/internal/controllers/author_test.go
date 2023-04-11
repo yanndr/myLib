@@ -169,3 +169,41 @@ func TestAuthorController_Delete(t *testing.T) {
 		})
 	}
 }
+
+func TestAuthorController_GetAll(t *testing.T) {
+	successResp := []model.Author{{AuthorBase: model.AuthorBase{LastName: "test"}}, {AuthorBase: model.AuthorBase{LastName: "test2"}}}
+	tests := []struct {
+		name        string
+		svcResponse []model.Author
+		want        model.APIResponse
+		wantErr     bool
+		wantSvcErr  bool
+	}{
+		{"Success", successResp, model.NewContentResponse(successResp), false, false},
+		{"Svc error", nil, model.APIResponse{}, true, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			teardownTest := setupTest(t)
+			defer teardownTest(t)
+
+			if !tt.wantErr {
+				m.EXPECT().GetAll(gomock.Any()).Return(successResp, nil).Times(1)
+			}
+
+			if tt.wantSvcErr {
+				m.EXPECT().GetAll(gomock.Any()).Return(nil, fmt.Errorf("expected error")).Times(1)
+			}
+
+			r := httptest.NewRequest(http.MethodGet, "/authors", nil)
+			got, err := c.GetAll(r)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetAll() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetAll() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -16,7 +16,7 @@ func newAuthorsEndpoint(parentPath string, authorSvc services.AuthorService) *Ro
 	return &Route{
 		Pattern: api.AuthorsPath,
 		Actions: map[string]EndpointHandler{
-			http.MethodGet:  notImplementedHandler,
+			http.MethodGet:  c.GetAll,
 			http.MethodPost: c.Create,
 		},
 		SubRoutes: []*Route{newAuthorEndpoint(c)},
