@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"api/internal/api"
-	"api/internal/model"
+	"api/api"
 	"api/internal/services"
+	"api/model"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -58,6 +58,8 @@ func handleServiceError(err error) (model.APIResponse, error) {
 		return model.APIResponse{}, api.NewDuplicateErr(err.Error())
 	} else if errors.As(err, &services.ValidationErr{}) {
 		return model.APIResponse{}, api.NewBadFormatErr(err.Error())
+	} else if errors.As(err, &services.NotFoundErr{}) {
+		return model.APIResponse{}, api.NewNotFoundErr(err.Error())
 	}
 	return model.APIResponse{}, err
 }

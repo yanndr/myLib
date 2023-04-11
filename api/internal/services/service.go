@@ -2,7 +2,7 @@ package services
 
 import (
 	"api/internal/db"
-	"api/internal/model"
+	"api/model"
 	"context"
 	"database/sql"
 	"fmt"

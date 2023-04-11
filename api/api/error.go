@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	UnexpectedErrorCode = "ERR-UNEXPECTED"
-	DuplicateErrorCode  = "ERR-DUPLICATE"
-	BadFormatErrorCode  = "ERR-BAD-FORMAT"
-
+	UnexpectedErrorCode    = "ERR-UNEXPECTED"
+	DuplicateErrorCode     = "ERR-DUPLICATE"
+	BadFormatErrorCode     = "ERR-BAD-FORMAT"
+	NotFoundErrorCode      = "ERR-NOT-FOUND"
 	UnexpectedErrorMessage = "An unexpected error occurred."
 )
 
@@ -38,6 +38,15 @@ func NewDuplicateErr(details string) StatusErr {
 		StatusCode:   http.StatusConflict,
 		ErrorCode:    DuplicateErrorCode,
 		ErrorMessage: "A duplicate of the entity has been found.",
+		ErrorDetails: details,
+	}
+}
+
+func NewNotFoundErr(details string) StatusErr {
+	return StatusErr{
+		StatusCode:   http.StatusNotFound,
+		ErrorCode:    NotFoundErrorCode,
+		ErrorMessage: "The requested resource was not found",
 		ErrorDetails: details,
 	}
 }

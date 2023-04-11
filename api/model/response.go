@@ -1,6 +1,9 @@
 package model
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 const (
 	SuccessStatus = "Success"
@@ -48,4 +51,15 @@ func NewCreatedResponse(location string) APIResponse {
 		Status:     SuccessStatus,
 		Location:   location,
 	}
+}
+
+// RawResponse is similar to APIResponse but is meant to be used to decode a response.
+type RawResponse struct {
+	StatusCode   int             `json:"status_code"`
+	Status       string          `json:"status"`
+	Content      json.RawMessage `json:"content,omitempty"`
+	Location     string          `json:"location,omitempty"`
+	Error        string          `json:"error,omitempty"`
+	ErrorCode    string          `json:"error_code,omitempty"`
+	ErrorDetails string          `json:"error_details,omitempty"`
 }

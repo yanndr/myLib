@@ -1,9 +1,9 @@
 package endpoints
 
 import (
-	"api/internal/api"
-	"api/internal/model"
+	"api/api"
 	"api/internal/services"
+	"api/model"
 	"encoding/json"
 	"errors"
 	"fmt"
