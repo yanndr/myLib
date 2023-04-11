@@ -28,8 +28,8 @@ func newAuthorEndpoint(c controllers.AuthorController) *Route {
 		Pattern: "/{id}",
 		Actions: map[string]EndpointHandler{
 			http.MethodGet:    c.Get,
-			http.MethodPut:    notImplementedHandler,
-			http.MethodPatch:  notImplementedHandler,
+			http.MethodPut:    c.Update,
+			http.MethodPatch:  c.PartialUpdate,
 			http.MethodDelete: c.Delete,
 		},
 		SubRoutes: []*Route{&authorBooksEndpoint},

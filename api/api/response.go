@@ -1,4 +1,4 @@
-package model
+package api
 
 import (
 	"encoding/json"
@@ -10,8 +10,8 @@ const (
 	ErrorStatus   = "Error"
 )
 
-// APIResponse represents the default response to an API request.
-type APIResponse struct {
+// Response represents the default response to an API request.
+type Response struct {
 	StatusCode   int    `json:"status_code"`
 	Status       string `json:"status"`
 	Content      any    `json:"content,omitempty"`
@@ -21,20 +21,20 @@ type APIResponse struct {
 	ErrorDetails string `json:"error_details,omitempty"`
 }
 
-// NewContentResponse creates a new APIResponse with StatusCode "Status Ok" and Status "Success".
+// NewContentResponse creates a new Response with StatusCode "Status Ok" and Status "Success".
 // It also sets the content from the parameter.
-func NewContentResponse(content any) APIResponse {
-	return APIResponse{
+func NewContentResponse(content any) Response {
+	return Response{
 		StatusCode: http.StatusOK,
 		Status:     SuccessStatus,
 		Content:    content,
 	}
 }
 
-// NewErrorResponse creates a new APIResponse with Status "ErrorStatus"
+// NewErrorResponse creates a new Response with Status "ErrorStatus"
 // and sets the StatusCode, Error and ErrorDetails from the parameters.
-func NewErrorResponse(statusCode int, err, errorCode, details string) APIResponse {
-	return APIResponse{
+func NewErrorResponse(statusCode int, err, errorCode, details string) Response {
+	return Response{
 		StatusCode:   statusCode,
 		Status:       ErrorStatus,
 		Error:        err,
@@ -43,25 +43,25 @@ func NewErrorResponse(statusCode int, err, errorCode, details string) APIRespons
 	}
 }
 
-// NewCreatedResponse creates a new APIResponse with StatusCode "StatusCreated" and Status "Success".
+// NewCreatedResponse creates a new Response with StatusCode "StatusCreated" and Status "Success".
 // Its also sets the location from the parameter
-func NewCreatedResponse(location string) APIResponse {
-	return APIResponse{
+func NewCreatedResponse(location string) Response {
+	return Response{
 		StatusCode: http.StatusCreated,
 		Status:     SuccessStatus,
 		Location:   location,
 	}
 }
 
-// NewEmptyResponse creates a new APIResponse with StatusCode "StatusOK" and Status "Success".
-func NewEmptyResponse() APIResponse {
-	return APIResponse{
+// NewEmptyResponse creates a new Response with StatusCode "StatusOK" and Status "Success".
+func NewEmptyResponse() Response {
+	return Response{
 		StatusCode: http.StatusOK,
 		Status:     SuccessStatus,
 	}
 }
 
-// RawResponse is similar to APIResponse but is meant to be used to decode a response.
+// RawResponse is similar to Response but is meant to be used to decode a response.
 type RawResponse struct {
 	StatusCode   int             `json:"status_code"`
 	Status       string          `json:"status"`

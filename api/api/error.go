@@ -13,6 +13,7 @@ const (
 	UnexpectedErrorMessage = "An unexpected error occurred."
 )
 
+// StatusErr is the API error that contains all the information for the model.ResponseAPI
 type StatusErr struct {
 	StatusCode   int
 	ErrorCode    string

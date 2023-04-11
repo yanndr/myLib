@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"api/model"
+	"api/api"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -38,18 +38,18 @@ func setupTest(t testing.TB) func(t testing.TB) {
 }
 
 func TestAuthorController_Create(t *testing.T) {
-	authorRequest := model.CreateUpdateAuthorRequest{AuthorBase: model.AuthorBase{LastName: "test"}}
+	authorRequest := api.CreateUpdateAuthorRequest{AuthorBase: api.AuthorBase{LastName: "test"}}
 	tests := []struct {
 		name       string
 		body       any
-		want       model.APIResponse
+		want       api.Response
 		wantErr    bool
 		wantSvcErr bool
 	}{
-		{name: "Success", body: authorRequest, want: model.NewCreatedResponse("/v1/authors/1"), wantErr: false},
-		{name: "service exception", body: authorRequest, want: model.APIResponse{}, wantErr: true, wantSvcErr: true},
-		{name: "Nil input", body: nil, want: model.APIResponse{}, wantErr: true},
-		{name: "bad input", body: struct{ test string }{test: "hello"}, want: model.APIResponse{}, wantErr: true},
+		{name: "Success", body: authorRequest, want: api.NewCreatedResponse("/v1/authors/1"), wantErr: false},
+		{name: "service exception", body: authorRequest, want: api.Response{}, wantErr: true, wantSvcErr: true},
+		{name: "Nil input", body: nil, want: api.Response{}, wantErr: true},
+		{name: "bad input", body: struct{ test string }{test: "hello"}, want: api.Response{}, wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -85,18 +85,18 @@ func TestAuthorController_Create(t *testing.T) {
 }
 
 func TestAuthorController_Get(t *testing.T) {
-	authorResponse := model.Author{ID: 1, AuthorBase: model.AuthorBase{LastName: "test"}}
+	authorResponse := api.Author{ID: 1, AuthorBase: api.AuthorBase{LastName: "test"}}
 	tests := []struct {
 		name        string
 		request     string
-		svcResponse model.Author
-		want        model.APIResponse
+		svcResponse api.Author
+		want        api.Response
 		wantErr     bool
 		wantSvcErr  bool
 	}{
-		{name: "Success", request: "1", svcResponse: authorResponse, want: model.NewContentResponse(authorResponse)},
-		{name: "Svc error", request: "1", svcResponse: model.Author{}, want: model.APIResponse{}, wantErr: true, wantSvcErr: true},
-		{name: "Bad format", request: "test", svcResponse: model.Author{}, want: model.APIResponse{}, wantErr: true},
+		{name: "Success", request: "1", svcResponse: authorResponse, want: api.NewContentResponse(authorResponse)},
+		{name: "Svc error", request: "1", svcResponse: api.Author{}, want: api.Response{}, wantErr: true, wantSvcErr: true},
+		{name: "Bad format", request: "test", svcResponse: api.Author{}, want: api.Response{}, wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -132,13 +132,13 @@ func TestAuthorController_Delete(t *testing.T) {
 	tests := []struct {
 		name       string
 		param      string
-		want       model.APIResponse
+		want       api.Response
 		wantErr    bool
 		wantSvcErr bool
 	}{
-		{"success", "1", model.NewEmptyResponse(), false, false},
-		{"svc error", "1", model.APIResponse{}, true, true},
-		{"bad input", "test", model.APIResponse{}, true, false},
+		{"success", "1", api.NewEmptyResponse(), false, false},
+		{"svc error", "1", api.Response{}, true, true},
+		{"bad input", "test", api.Response{}, true, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -171,16 +171,16 @@ func TestAuthorController_Delete(t *testing.T) {
 }
 
 func TestAuthorController_GetAll(t *testing.T) {
-	successResp := []model.Author{{AuthorBase: model.AuthorBase{LastName: "test"}}, {AuthorBase: model.AuthorBase{LastName: "test2"}}}
+	successResp := []api.Author{{AuthorBase: api.AuthorBase{LastName: "test"}}, {AuthorBase: api.AuthorBase{LastName: "test2"}}}
 	tests := []struct {
 		name        string
-		svcResponse []model.Author
-		want        model.APIResponse
+		svcResponse []api.Author
+		want        api.Response
 		wantErr     bool
 		wantSvcErr  bool
 	}{
-		{"Success", successResp, model.NewContentResponse(successResp), false, false},
-		{"Svc error", nil, model.APIResponse{}, true, true},
+		{"Success", successResp, api.NewContentResponse(successResp), false, false},
+		{"Svc error", nil, api.Response{}, true, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

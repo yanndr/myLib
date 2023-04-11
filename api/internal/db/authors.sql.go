@@ -138,3 +138,28 @@ func (q *Queries) GetUniqueAuthor(ctx context.Context, arg GetUniqueAuthorParams
 	)
 	return i, err
 }
+
+const updateAuthor = `-- name: UpdateAuthor :exec
+UPDATE authors
+SET last_name=?,
+    first_name=?,
+    middle_name=?
+WHERE id = ?
+`
+
+type UpdateAuthorParams struct {
+	LastName   string
+	FirstName  string
+	MiddleName string
+	ID         int64
+}
+
+func (q *Queries) UpdateAuthor(ctx context.Context, arg UpdateAuthorParams) error {
+	_, err := q.db.ExecContext(ctx, updateAuthor,
+		arg.LastName,
+		arg.FirstName,
+		arg.MiddleName,
+		arg.ID,
+	)
+	return err
+}

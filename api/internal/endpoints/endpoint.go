@@ -3,7 +3,6 @@ package endpoints
 import (
 	"api/api"
 	"api/internal/services"
-	"api/model"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,8 +15,8 @@ const (
 
 var NotImplementedErr = fmt.Errorf("not implemented")
 
-// EndpointHandler represents a request method that returns a model.APIResponse.
-type EndpointHandler func(r *http.Request) (model.APIResponse, error)
+// EndpointHandler represents a request method that returns a model.Response.
+type EndpointHandler func(r *http.Request) (api.Response, error)
 
 // Route represents a specific route of a server. It contains all the EndpointHandler mapped
 // to their http.methods and all the sub routes
@@ -32,8 +31,8 @@ func NewV1Route(apiVersion string, authSvc services.AuthorService) *Route {
 	return &Route{
 		Pattern: apiV1,
 		Actions: map[string]EndpointHandler{
-			http.MethodGet: func(r *http.Request) (model.APIResponse, error) {
-				return model.NewContentResponse(&model.APIInformation{APIVersion: apiVersion}), nil
+			http.MethodGet: func(r *http.Request) (api.Response, error) {
+				return api.NewContentResponse(&api.Information{APIVersion: apiVersion}), nil
 			},
 		},
 		SubRoutes: []*Route{
@@ -43,8 +42,8 @@ func NewV1Route(apiVersion string, authSvc services.AuthorService) *Route {
 }
 
 // RootResponse is the EndpointHandler of the root path of the server.
-var RootResponse = Handle(func(r *http.Request) (model.APIResponse, error) {
-	return model.NewContentResponse([]string{apiV1}), nil
+var RootResponse = Handle(func(r *http.Request) (api.Response, error) {
+	return api.NewContentResponse([]string{apiV1}), nil
 })
 
 // Handle responds to an HTTP request,  executes the action EndpointHandler
@@ -61,11 +60,11 @@ func Handle(action EndpointHandler) func(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func notImplementedHandler(_ *http.Request) (model.APIResponse, error) {
-	return model.APIResponse{}, NotImplementedErr
+func notImplementedHandler(_ *http.Request) (api.Response, error) {
+	return api.Response{}, NotImplementedErr
 }
 
-func getErrorResponse(err error) model.APIResponse {
+func getErrorResponse(err error) api.Response {
 	var statusCode int
 	var errorCode string
 	var errMessage string
@@ -83,5 +82,5 @@ func getErrorResponse(err error) model.APIResponse {
 		details = err.Error()
 	}
 
-	return model.NewErrorResponse(statusCode, errMessage, errorCode, details)
+	return api.NewErrorResponse(statusCode, errMessage, errorCode, details)
 }

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"api/model"
+	"api/api"
 	"bufio"
 	"context"
 	"errors"
@@ -72,7 +72,7 @@ var authorDeleteCmd = &cobra.Command{
 		cli := client.NewClient(viper.GetString("url"), &http.Client{})
 
 		lastname := args[0]
-		deleted, err := executeActionForAuthors(cli, lastname, "delete", func(author model.Author) error {
+		deleted, err := executeActionForAuthors(cli, lastname, "delete", func(author api.Author) error {
 			err := cli.DeleteAuthor(context.TODO(), author.ID)
 			if err != nil {
 				return err
@@ -91,7 +91,7 @@ var authorDeleteCmd = &cobra.Command{
 	},
 }
 
-func executeActionForAuthors(cli *client.Client, requestName, verb string, fn func(author model.Author) error) (bool, error) {
+func executeActionForAuthors(cli *client.Client, requestName, verb string, fn func(author api.Author) error) (bool, error) {
 	authors, err := cli.GetAuthors(context.TODO(), requestName)
 	if err != nil {
 		return false, err
@@ -121,7 +121,7 @@ func executeActionForAuthors(cli *client.Client, requestName, verb string, fn fu
 	return true, nil
 }
 
-func multiAuthorsPrompt(lastname string, authors []model.Author, verb string) (int, error) {
+func multiAuthorsPrompt(lastname string, authors []api.Author, verb string) (int, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Printf("%v authors exist with the last name %s:\n", len(authors), lastname)
 	for i, a := range authors {

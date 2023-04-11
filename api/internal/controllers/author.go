@@ -3,9 +3,7 @@ package controllers
 import (
 	"api/api"
 	"api/internal/services"
-	"api/model"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"net/http"
@@ -19,13 +17,13 @@ type AuthorController struct {
 }
 
 // Create is the endpoint action for the HTTP POST method for creating a new author.
-func (c *AuthorController) Create(r *http.Request) (model.APIResponse, error) {
-	var author model.CreateUpdateAuthorRequest
+func (c *AuthorController) Create(r *http.Request) (api.Response, error) {
+	var author api.CreateUpdateAuthorRequest
 	if err := json.NewDecoder(r.Body).Decode(&author); err != nil {
-		return model.APIResponse{}, api.NewBadFormatErr(err.Error())
+		return api.Response{}, api.NewBadFormatErr(err.Error())
 	}
-	if author == (model.CreateUpdateAuthorRequest{}) {
-		return model.APIResponse{}, api.NewBadFormatErr("the author is empty")
+	if author == (api.CreateUpdateAuthorRequest{}) {
+		return api.Response{}, api.NewBadFormatErr("the author is empty")
 	}
 
 	id, err := c.AuthorService.Create(r.Context(), author.AuthorBase)
@@ -34,15 +32,15 @@ func (c *AuthorController) Create(r *http.Request) (model.APIResponse, error) {
 	}
 
 	location := fmt.Sprintf("%v/%v", c.BasePath, id)
-	return model.NewCreatedResponse(location), nil
+	return api.NewCreatedResponse(location), nil
 }
 
 // Get is the endpoint action for the GET method to retrieve an author.
-func (c *AuthorController) Get(r *http.Request) (model.APIResponse, error) {
+func (c *AuthorController) Get(r *http.Request) (api.Response, error) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		return model.APIResponse{}, api.NewBadFormatErr(err.Error())
+		return api.Response{}, api.NewBadFormatErr(err.Error())
 	}
 
 	author, err := c.AuthorService.GetById(r.Context(), id)
@@ -50,15 +48,15 @@ func (c *AuthorController) Get(r *http.Request) (model.APIResponse, error) {
 		return handleServiceError(err)
 	}
 
-	return model.NewContentResponse(author), nil
+	return api.NewContentResponse(author), nil
 }
 
 // Delete is the endpoint action for the DELETE method for deleting an author.
-func (c *AuthorController) Delete(r *http.Request) (model.APIResponse, error) {
+func (c *AuthorController) Delete(r *http.Request) (api.Response, error) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		return model.APIResponse{}, api.NewBadFormatErr(err.Error())
+		return api.Response{}, api.NewBadFormatErr(err.Error())
 	}
 
 	err = c.AuthorService.Delete(r.Context(), id)
@@ -66,11 +64,11 @@ func (c *AuthorController) Delete(r *http.Request) (model.APIResponse, error) {
 		return handleServiceError(err)
 	}
 
-	return model.NewEmptyResponse(), nil
+	return api.NewEmptyResponse(), nil
 }
 
 // GetAll is the endpoint action for the GET method to retrieve the list of authors.
-func (c *AuthorController) GetAll(r *http.Request) (model.APIResponse, error) {
+func (c *AuthorController) GetAll(r *http.Request) (api.Response, error) {
 	lastname := r.URL.Query().Get("lastname")
 
 	authors, err := c.AuthorService.GetAll(r.Context(), lastname)
@@ -78,16 +76,48 @@ func (c *AuthorController) GetAll(r *http.Request) (model.APIResponse, error) {
 		return handleServiceError(err)
 	}
 
-	return model.NewContentResponse(authors), nil
+	return api.NewContentResponse(authors), nil
 }
 
-func handleServiceError(err error) (model.APIResponse, error) {
-	if errors.As(err, &services.DuplicateErr{}) {
-		return model.APIResponse{}, api.NewDuplicateErr(err.Error())
-	} else if errors.As(err, &services.ValidationErr{}) {
-		return model.APIResponse{}, api.NewBadFormatErr(err.Error())
-	} else if errors.As(err, &services.NotFoundErr{}) {
-		return model.APIResponse{}, api.NewNotFoundErr(err.Error())
+// Update is the endpoint action for the PUT method for updating an author.
+func (c *AuthorController) Update(r *http.Request) (api.Response, error) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return api.Response{}, api.NewBadFormatErr(err.Error())
 	}
-	return model.APIResponse{}, err
+
+	var author api.CreateUpdateAuthorRequest
+
+	if err = json.NewDecoder(r.Body).Decode(&author); err != nil {
+		return api.Response{}, api.NewBadFormatErr(err.Error())
+	}
+
+	err = c.AuthorService.Update(r.Context(), id, author.AuthorBase)
+	if err != nil {
+		return handleServiceError(err)
+	}
+
+	return api.NewEmptyResponse(), nil
+}
+
+// PartialUpdate is the endpoint action for the PATCH method for partially updating an author.
+func (c *AuthorController) PartialUpdate(r *http.Request) (api.Response, error) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return api.Response{}, api.NewBadFormatErr(err.Error())
+	}
+
+	var patchAuthorRequest api.PatchAuthorRequest
+	if err = json.NewDecoder(r.Body).Decode(&patchAuthorRequest); err != nil {
+		return api.Response{}, api.NewBadFormatErr(err.Error())
+	}
+
+	err = c.AuthorService.PartialUpdate(r.Context(), id, patchAuthorRequest)
+	if err != nil {
+		return handleServiceError(err)
+	}
+
+	return api.NewEmptyResponse(), nil
 }

@@ -17,3 +17,10 @@ SELECT * FROM authors ORDER BY last_name;
 
 -- name: GetAllAuthorsWithName :many
 SELECT * FROM authors WHERE last_name =? ORDER BY last_name;
+
+-- name: UpdateAuthor :exec
+UPDATE authors
+SET last_name=?,
+    first_name=?,
+    middle_name=?
+WHERE id = ?;
