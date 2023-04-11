@@ -1,18 +1,34 @@
 package main
 
 import (
+	"api/internal/db"
 	"api/internal/endpoints"
+	"api/internal/services"
+	apisql "api/sql"
 	"context"
+	"database/sql"
+	"errors"
 	"flag"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"path"
 	"syscall"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-playground/validator/v10"
+	_ "github.com/mattn/go-sqlite3"
+)
+
+var Version = "0.1-dev"
+
+const (
+	dbName  = "books.db"
+	appName = "myLib"
 )
 
 func main() {
@@ -20,12 +36,33 @@ func main() {
 	flag.IntVar(&port, "port", 8080, "port default 8080")
 	flag.Parse()
 
-	if err := run(port); err != nil {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	appConfigDir := path.Join(home, "."+appName)
+
+	if err := run(port, appConfigDir, dbName); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(port int) error {
+func run(port int, configDir, dbName string) error {
+	if _, err := os.Stat(configDir); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(configDir, 0700)
+		if err != nil {
+			return err
+		}
+	}
+
+	database, err := openDatabase(path.Join(configDir, dbName))
+	if err != nil {
+		return err
+	}
+	queries := db.New(database)
+	authSvcLogger := log.New(os.Stderr, "API - AuthorService -", log.LstdFlags)
+	authSvc := services.NewAuthorService(database, queries, validator.New(), authSvcLogger)
+
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -33,7 +70,7 @@ func run(port int) error {
 	r.Get("/", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("ok"))
 	})
-	createRoutes(r, endpoints.NewV1Route())
+	createRoutes(r, endpoints.NewV1Route(Version, authSvc))
 
 	server := &http.Server{Addr: fmt.Sprintf(":%v", port), Handler: r}
 
@@ -63,7 +100,7 @@ func run(port int) error {
 		serverStopCtx()
 	}()
 	fmt.Printf("Server started, listening on port: %v\n", port)
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		return err
 	}
@@ -84,4 +121,23 @@ func createRoutes(router chi.Router, endpoint *endpoints.Route) {
 			}
 		}
 	})
+}
+
+func openDatabase(dbPath string) (*sql.DB, error) {
+	newDb := false
+	if _, err := os.Stat(dbPath); errors.Is(err, os.ErrNotExist) {
+		newDb = true
+	}
+	database, err := sql.Open("sqlite3", fmt.Sprintf("%s?_foreign_keys=on", dbPath))
+	if err != nil {
+		return nil, err
+	}
+
+	if newDb {
+		if _, err := database.ExecContext(context.Background(), apisql.Schema); err != nil {
+			return nil, err
+		}
+	}
+
+	return database, nil
 }
