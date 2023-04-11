@@ -22,6 +22,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("url", "", "http://localhost:8080/v1", "url of the rest api")
 	viper.BindPFlag("url", rootCmd.PersistentFlags().Lookup("url"))
 
+	rootCmd.AddCommand(authorCmd)
 	rootCmd.AddCommand(versionCmd)
 }
 

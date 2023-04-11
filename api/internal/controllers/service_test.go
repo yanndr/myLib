@@ -5,7 +5,7 @@
 package controllers
 
 import (
-	model "api/internal/model"
+	model "api/model"
 	context "context"
 	reflect "reflect"
 

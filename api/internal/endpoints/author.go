@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"api/api"
 	"api/internal/controllers"
 	"api/internal/services"
 	"net/http"
@@ -10,10 +11,10 @@ import (
 func newAuthorsEndpoint(parentPath string, authorSvc services.AuthorService) *Route {
 	c := controllers.AuthorController{
 		AuthorService: authorSvc,
-		BasePath:      path.Join(parentPath, AuthorsPath),
+		BasePath:      path.Join(parentPath, api.AuthorsPath),
 	}
 	return &Route{
-		Pattern: AuthorsPath,
+		Pattern: api.AuthorsPath,
 		Actions: map[string]EndpointHandler{
 			http.MethodGet:  notImplementedHandler,
 			http.MethodPost: c.Create,
@@ -37,7 +38,7 @@ func newAuthorEndpoint(c controllers.AuthorController) *Route {
 }
 
 var authorBooksEndpoint = Route{
-	Pattern: BooksPath,
+	Pattern: api.BooksPath,
 	Actions: map[string]EndpointHandler{
 		http.MethodGet: notImplementedHandler,
 	},

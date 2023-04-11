@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"api/internal/model"
+	"api/model"
 	"bytes"
 	"context"
 	"encoding/json"

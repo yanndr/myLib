@@ -11,9 +11,7 @@ import (
 )
 
 const (
-	AuthorsPath = "/authors"
-	BooksPath   = "/books"
-	apiV1       = "/v1"
+	apiV1 = "/v1"
 )
 
 var NotImplementedErr = fmt.Errorf("not implemented")
