@@ -16,15 +16,21 @@ import (
 )
 
 var (
-	firstname, middleName string
+	lastname, firstname, middleName                      string
+	lastnameChanged, firstnameChanged, middleNameChanged bool
 )
 
 func init() {
 	authorCmd.AddCommand(authorCreateCmd)
 	authorCmd.AddCommand(authorDeleteCmd)
+	authorCmd.AddCommand(authorUpdateCmd)
 
 	authorCreateCmd.Flags().StringVarP(&firstname, "firstname", "f", "", "Set the firstname (or initials) of the author")
 	authorCreateCmd.Flags().StringVarP(&middleName, "middlename", "m", "", "Set the middlename of the author")
+
+	authorUpdateCmd.Flags().StringVarP(&lastname, "lastname", "l", "", "Set the last name of the author")
+	authorUpdateCmd.Flags().StringVarP(&firstname, "firstname", "f", "", "Set the first name (or initials) of the author")
+	authorUpdateCmd.Flags().StringVarP(&middleName, "middlename", "m", "", "Set the middle name of the author")
 
 }
 
@@ -84,7 +90,58 @@ var authorDeleteCmd = &cobra.Command{
 			return err
 		}
 		if deleted {
-			fmt.Printf("Author %s deleted.", lastname)
+			fmt.Printf("Author %s deleted.\n", lastname)
+		}
+
+		return nil
+	},
+}
+
+var authorUpdateCmd = &cobra.Command{
+	Use:   "update <lastname>",
+	Short: "Update an author",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			_ = cmd.Usage()
+			return nil
+		}
+		cli := client.NewClient(viper.GetString("url"), &http.Client{})
+
+		lastnameArg := args[0]
+
+		updated, err := executeActionForAuthors(cli, lastnameArg, "use", func(author api.Author) error {
+			err := cli.UpdateAuthor(context.TODO(), author.ID, lastname, firstname, middleName, lastnameChanged, firstnameChanged, middleNameChanged)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+
+		if err != nil {
+			if errors.Is(err, client.DuplicateResourceErr) {
+				name := strings.Join(strings.Fields(fmt.Sprintf("%v %v %v", firstname, middleName, lastnameArg)), " ")
+				fmt.Printf("Cannot update %s because an Author with the same first name, middle name and last name already exists.\n", name)
+				return nil
+			}
+			return err
+		}
+
+		if lastnameChanged {
+			lastnameArg = lastname
+		}
+		if updated {
+			fmt.Printf("Author %s updated.\n", lastnameArg)
+		}
+
+		return nil
+	},
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		lastnameChanged = cmd.Flags().Changed("lastname")
+		firstnameChanged = cmd.Flags().Changed("firstname")
+		middleNameChanged = cmd.Flags().Changed("middlename")
+
+		if !lastnameChanged && !firstnameChanged && !middleNameChanged {
+			return errors.New("at least one flag must be provided")
 		}
 
 		return nil

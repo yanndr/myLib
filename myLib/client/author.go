@@ -49,3 +49,22 @@ func (cli *Client) DeleteAuthor(ctx context.Context, id int64) error {
 
 	return nil
 }
+
+func (cli *Client) UpdateAuthor(ctx context.Context, id int64, lastname, firstname, middleName string, modifiedLastname, modifiedFirstname, modifiedMiddleName bool) error {
+	patchRequest := api.PatchAuthorRequest{
+		ModifiedLastName:   modifiedLastname,
+		ModifiedFirstName:  modifiedFirstname,
+		ModifiedMiddleName: modifiedMiddleName,
+		AuthorBase: api.AuthorBase{
+			LastName:   lastname,
+			FirstName:  firstname,
+			MiddleName: middleName,
+		},
+	}
+	_, err := cli.patch(ctx, path.Join(api.AuthorsPath, fmt.Sprintf("%v", id)), patchRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
