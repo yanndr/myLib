@@ -28,6 +28,15 @@ func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (int
 	return id, err
 }
 
+const deleteAuthor = `-- name: DeleteAuthor :exec
+DELETE FROM authors WHERE id = ?
+`
+
+func (q *Queries) DeleteAuthor(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAuthor, id)
+	return err
+}
+
 const getAuthorById = `-- name: GetAuthorById :one
 SELECT id, first_name, last_name, middle_name FROM authors WHERE id = ?
 `

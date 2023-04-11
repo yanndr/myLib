@@ -15,6 +15,8 @@ type AuthorService interface {
 	Create(ctx context.Context, author model.AuthorBase) (int64, error)
 	// GetById returns a model.Author based on its id.
 	GetById(ctx context.Context, id int64) (model.Author, error)
+	// Delete deletes an author.
+	Delete(ctx context.Context, id int64) error
 }
 
 // Logger interface represents the method required for a logger.
@@ -95,6 +97,34 @@ func (s *authorService) GetById(ctx context.Context, id int64) (model.Author, er
 	}
 
 	return author, nil
+}
+
+func (s *authorService) Delete(ctx context.Context, id int64) error {
+	err := s.transaction(func(q *db.Queries) error {
+		_, err := q.GetAuthorById(ctx, id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return NewNotFoundErr("Author", id)
+			}
+
+			s.logger.Printf("Delete - query call error, %s", err)
+			return fmt.Errorf("get author by id error: %w", err)
+		}
+
+		err = q.DeleteAuthor(ctx, id)
+		if err != nil {
+			s.logger.Printf("Delete - query call error, %s", err)
+			return fmt.Errorf("deleting author %v error: %w", id, err)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *authorService) transaction(action func(queries *db.Queries) error) error {

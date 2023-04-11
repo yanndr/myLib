@@ -53,6 +53,14 @@ func NewCreatedResponse(location string) APIResponse {
 	}
 }
 
+// NewEmptyResponse creates a new APIResponse with StatusCode "StatusOK" and Status "Success".
+func NewEmptyResponse() APIResponse {
+	return APIResponse{
+		StatusCode: http.StatusOK,
+		Status:     SuccessStatus,
+	}
+}
+
 // RawResponse is similar to APIResponse but is meant to be used to decode a response.
 type RawResponse struct {
 	StatusCode   int             `json:"status_code"`

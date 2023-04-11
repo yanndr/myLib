@@ -53,6 +53,22 @@ func (c *AuthorController) Get(r *http.Request) (model.APIResponse, error) {
 	return model.NewContentResponse(author), nil
 }
 
+// Delete is the endpoint action for the DELETE method for deleting an author.
+func (c *AuthorController) Delete(r *http.Request) (model.APIResponse, error) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return model.APIResponse{}, api.NewBadFormatErr(err.Error())
+	}
+
+	err = c.AuthorService.Delete(r.Context(), id)
+	if err != nil {
+		return handleServiceError(err)
+	}
+
+	return model.NewEmptyResponse(), nil
+}
+
 func handleServiceError(err error) (model.APIResponse, error) {
 	if errors.As(err, &services.DuplicateErr{}) {
 		return model.APIResponse{}, api.NewDuplicateErr(err.Error())

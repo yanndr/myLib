@@ -127,3 +127,45 @@ func TestAuthorController_Get(t *testing.T) {
 		})
 	}
 }
+
+func TestAuthorController_Delete(t *testing.T) {
+	tests := []struct {
+		name       string
+		param      string
+		want       model.APIResponse
+		wantErr    bool
+		wantSvcErr bool
+	}{
+		{"success", "1", model.NewEmptyResponse(), false, false},
+		{"svc error", "1", model.APIResponse{}, true, true},
+		{"bad input", "test", model.APIResponse{}, true, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			teardownTest := setupTest(t)
+			defer teardownTest(t)
+
+			if !tt.wantErr {
+				m.EXPECT().Delete(gomock.Any(), int64(1)).Return(nil).Times(1)
+			}
+
+			if tt.wantSvcErr {
+				m.EXPECT().Delete(gomock.Any(), int64(1)).Return(fmt.Errorf("expected error")).Times(1)
+			}
+
+			r := httptest.NewRequest(http.MethodGet, "/authors/{id}", nil)
+			chiCtx := chi.NewRouteContext()
+			chiCtx.URLParams.Add("id", tt.param)
+			r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, chiCtx))
+
+			got, err := c.Delete(r)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Delete() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

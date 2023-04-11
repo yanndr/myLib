@@ -30,7 +30,7 @@ func newAuthorEndpoint(c controllers.AuthorController) *Route {
 			http.MethodGet:    c.Get,
 			http.MethodPut:    notImplementedHandler,
 			http.MethodPatch:  notImplementedHandler,
-			http.MethodDelete: notImplementedHandler,
+			http.MethodDelete: c.Delete,
 		},
 		SubRoutes: []*Route{&authorBooksEndpoint},
 	}
