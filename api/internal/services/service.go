@@ -18,7 +18,7 @@ type AuthorService interface {
 	// Delete deletes an author.
 	Delete(ctx context.Context, id int64) error
 	// GetAll returns the list of all authors.
-	GetAll(ctx context.Context) ([]model.Author, error)
+	GetAll(ctx context.Context, nameFilter string) ([]model.Author, error)
 }
 
 // Logger interface represents the method required for a logger.
@@ -129,11 +129,14 @@ func (s *authorService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *authorService) GetAll(ctx context.Context) ([]model.Author, error) {
+func (s *authorService) GetAll(ctx context.Context, nameFilter string) ([]model.Author, error) {
 	var authors []db.Author
 	var err error
-
-	authors, err = s.queries.GetAllAuthors(ctx)
+	if nameFilter != "" {
+		authors, err = s.queries.GetAllAuthorsWithName(ctx, nameFilter)
+	} else {
+		authors, err = s.queries.GetAllAuthors(ctx)
+	}
 
 	if err != nil && err != sql.ErrNoRows {
 		s.logger.Printf("GetAll - query call error, %s\n", err)

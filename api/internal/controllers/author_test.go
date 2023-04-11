@@ -188,11 +188,11 @@ func TestAuthorController_GetAll(t *testing.T) {
 			defer teardownTest(t)
 
 			if !tt.wantErr {
-				m.EXPECT().GetAll(gomock.Any()).Return(successResp, nil).Times(1)
+				m.EXPECT().GetAll(gomock.Any(), "").Return(successResp, nil).Times(1)
 			}
 
 			if tt.wantSvcErr {
-				m.EXPECT().GetAll(gomock.Any()).Return(nil, fmt.Errorf("expected error")).Times(1)
+				m.EXPECT().GetAll(gomock.Any(), "").Return(nil, fmt.Errorf("expected error")).Times(1)
 			}
 
 			r := httptest.NewRequest(http.MethodGet, "/authors", nil)

@@ -13,4 +13,7 @@ SELECT * FROM authors WHERE id = ?;
 DELETE FROM authors WHERE id = ?;
 
 -- name: GetAllAuthors :many
-SELECT * From authors ORDER BY last_name;
+SELECT * FROM authors ORDER BY last_name;
+
+-- name: GetAllAuthorsWithName :many
+SELECT * FROM authors WHERE last_name =? ORDER BY last_name;

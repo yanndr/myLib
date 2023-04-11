@@ -65,18 +65,18 @@ func (mr *MockAuthorServiceMockRecorder) Delete(ctx, id interface{}) *gomock.Cal
 }
 
 // GetAll mocks base method.
-func (m *MockAuthorService) GetAll(ctx context.Context) ([]model.Author, error) {
+func (m *MockAuthorService) GetAll(ctx context.Context, nameFilter string) ([]model.Author, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAll", ctx)
+	ret := m.ctrl.Call(m, "GetAll", ctx, nameFilter)
 	ret0, _ := ret[0].([]model.Author)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAll indicates an expected call of GetAll.
-func (mr *MockAuthorServiceMockRecorder) GetAll(ctx interface{}) *gomock.Call {
+func (mr *MockAuthorServiceMockRecorder) GetAll(ctx, nameFilter interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockAuthorService)(nil).GetAll), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockAuthorService)(nil).GetAll), ctx, nameFilter)
 }
 
 // GetById mocks base method.

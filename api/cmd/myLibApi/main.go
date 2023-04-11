@@ -67,9 +67,7 @@ func run(port int, configDir, dbName string) error {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(10 * time.Second))
-	r.Get("/", func(writer http.ResponseWriter, request *http.Request) {
-		writer.Write([]byte("ok"))
-	})
+	r.Get("/", endpoints.RootResponse)
 	createRoutes(r, endpoints.NewV1Route(Version, authSvc))
 
 	server := &http.Server{Addr: fmt.Sprintf(":%v", port), Handler: r}

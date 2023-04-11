@@ -38,11 +38,43 @@ func (q *Queries) DeleteAuthor(ctx context.Context, id int64) error {
 }
 
 const getAllAuthors = `-- name: GetAllAuthors :many
-SELECT id, first_name, last_name, middle_name From authors ORDER BY last_name
+SELECT id, first_name, last_name, middle_name FROM authors ORDER BY last_name
 `
 
 func (q *Queries) GetAllAuthors(ctx context.Context) ([]Author, error) {
 	rows, err := q.db.QueryContext(ctx, getAllAuthors)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Author
+	for rows.Next() {
+		var i Author
+		if err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.MiddleName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllAuthorsWithName = `-- name: GetAllAuthorsWithName :many
+SELECT id, first_name, last_name, middle_name FROM authors WHERE last_name =? ORDER BY last_name
+`
+
+func (q *Queries) GetAllAuthorsWithName(ctx context.Context, lastName string) ([]Author, error) {
+	rows, err := q.db.QueryContext(ctx, getAllAuthorsWithName, lastName)
 	if err != nil {
 		return nil, err
 	}

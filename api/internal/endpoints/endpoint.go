@@ -42,6 +42,11 @@ func NewV1Route(apiVersion string, authSvc services.AuthorService) *Route {
 	}
 }
 
+// RootResponse is the EndpointHandler of the root path of the server.
+var RootResponse = Handle(func(r *http.Request) (model.APIResponse, error) {
+	return model.NewContentResponse([]string{apiV1}), nil
+})
+
 // Handle responds to an HTTP request,  executes the action EndpointHandler
 // and writes the result to the http.ResponseWriter
 func Handle(action EndpointHandler) func(w http.ResponseWriter, r *http.Request) {

@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"api/model"
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -8,6 +10,8 @@ import (
 	"github.com/spf13/viper"
 	"myLib/client"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 )
 
@@ -17,6 +21,7 @@ var (
 
 func init() {
 	authorCmd.AddCommand(authorCreateCmd)
+	authorCmd.AddCommand(authorDeleteCmd)
 
 	authorCreateCmd.Flags().StringVarP(&firstname, "firstname", "f", "", "Set the firstname (or initials) of the author")
 	authorCreateCmd.Flags().StringVarP(&middleName, "middlename", "m", "", "Set the middlename of the author")
@@ -54,4 +59,91 @@ var authorCreateCmd = &cobra.Command{
 		fmt.Printf("Author %s created.\n", lastnameArg)
 		return nil
 	},
+}
+
+var authorDeleteCmd = &cobra.Command{
+	Use:   "delete <lastname>",
+	Short: "Delete an author",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			_ = cmd.Usage()
+			return nil
+		}
+		cli := client.NewClient(viper.GetString("url"), &http.Client{})
+
+		lastname := args[0]
+		deleted, err := executeActionForAuthors(cli, lastname, "delete", func(author model.Author) error {
+			err := cli.DeleteAuthor(context.TODO(), author.ID)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+		if deleted {
+			fmt.Printf("Author %s deleted.", lastname)
+		}
+
+		return nil
+	},
+}
+
+func executeActionForAuthors(cli *client.Client, requestName, verb string, fn func(author model.Author) error) (bool, error) {
+	authors, err := cli.GetAuthors(context.TODO(), requestName)
+	if err != nil {
+		return false, err
+	}
+	l := len(authors)
+	if l == 0 {
+		fmt.Printf("No authors with lastname %s found\n", requestName)
+		return false, nil
+	} else if l == 1 {
+		err = fn(authors[0])
+		if err != nil {
+			return false, nil
+		}
+	} else {
+		val, err := multiAuthorsPrompt(requestName, authors, verb)
+		if err != nil {
+			return false, err
+		}
+		if val > 0 {
+			err := fn(authors[val-1])
+			if err != nil {
+				return false, err
+			}
+		}
+	}
+
+	return true, nil
+}
+
+func multiAuthorsPrompt(lastname string, authors []model.Author, verb string) (int, error) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("%v authors exist with the last name %s:\n", len(authors), lastname)
+	for i, a := range authors {
+		name := strings.Join(strings.Fields(fmt.Sprintf("%v %v %v", a.FirstName, a.MiddleName, a.LastName)), " ")
+		fmt.Printf("[%v] %v\t\n", i+1, name)
+	}
+	valid := false
+	var choice int
+	for !valid {
+		fmt.Printf("Choose which one you want to %s or enter c to cancel.", verb)
+		str, _, err := reader.ReadLine()
+
+		if err != nil {
+			return -1, err
+		}
+		if strings.ToLower(string(str)) == "c" {
+			return -1, nil
+		}
+		choice, err = strconv.Atoi(string(str))
+		if err == nil {
+			valid = choice <= len(authors) && choice > 0
+		}
+	}
+	return choice, nil
 }
