@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/internal/endpoints"
 	"context"
 	"flag"
 	"fmt"
@@ -32,6 +33,7 @@ func run(port int) error {
 	r.Get("/", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("ok"))
 	})
+	createRoutes(r, endpoints.NewV1Route())
 
 	server := &http.Server{Addr: fmt.Sprintf(":%v", port), Handler: r}
 
@@ -69,4 +71,17 @@ func run(port int) error {
 	// Wait for server context to be stopped
 	<-serverCtx.Done()
 	return nil
+}
+
+func createRoutes(router chi.Router, endpoint *endpoints.Route) {
+	router.Route(endpoint.Pattern, func(r chi.Router) {
+		for method, action := range endpoint.Actions {
+			r.Method(method, "/", http.HandlerFunc(endpoints.Handle(action)))
+		}
+		if endpoint.SubRoutes != nil {
+			for _, e := range endpoint.SubRoutes {
+				createRoutes(r, e)
+			}
+		}
+	})
 }
