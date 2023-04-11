@@ -41,7 +41,7 @@ It allows you to:
 
 ## Usage
 
-```bash
+```shell
 $ myLib command [flags]
 ```
 
@@ -70,7 +70,7 @@ $ myLib command [flags]
 Manage authors 
 
 ### Usage
-```bash
+```shell
 $ myLib author [flags] 
 $ myLib author [command]
 ```
@@ -93,7 +93,7 @@ $ myLib author [command]
 ## Create an author
 
 ### Usage
-```bash
+```shell
 $ myLib author create <lastname> [OPTIONS]
 ```
 
@@ -107,7 +107,7 @@ $ myLib author create <lastname> [OPTIONS]
 ### Examples
 
 Create the author Tolkien with the firstname (or initial) J.R.R.
-```bash
+```shell
  $ myLib author create Tolkien --firstname=J.R.R.
  Author Tolkien created.
 ```
@@ -120,7 +120,7 @@ another author with the same first name, middle name and last name will display 
 ## Update an author
 
 ### Usage:
-```bash
+```shell
 $ myLib author update <lastname> [flags]
  ```
 ### Flags
@@ -133,12 +133,12 @@ $ myLib author update <lastname> [flags]
  
 ### Examples:
 Update the author Tolkien and set the first name to "John"
-```bash
+```shell
 $ myLib author update Tolkien -f John
 Author Tolkien updated.
 ```
 Update the author "sartre" and set the name to "Sartre" and the first name to Jean Paul
-```bash  
+```shell  
 $ myLib author update sartre --lastname=Sartre --firstname="Jean Paul" 
 Author Sartre updated.
 ```
@@ -147,7 +147,7 @@ Author Sartre updated.
 If two authors exist with the same last name, the program will prompt you 
 to choose which author to update:
 
-```bash
+```shell
 $ myLib author update Tolkien -f J.R.R
 Two authors exist with last name Tolkien:
 [1] John Tolkien
@@ -159,7 +159,7 @@ Choose which one you want to update or enter c to cancel.
 ## Delete an author
 
 ### Usage
-```bash
+```shell
 $ myLib author delete <lastname> [flags]
 ```
 
@@ -170,7 +170,7 @@ $ myLib author delete <lastname> [flags]
 
 ### Examples
 Delete the author Tolkien
-```bash
+```shell
 $ myLib author delete Tolkien
 Author Tolkien deleted.
 ```
@@ -178,7 +178,7 @@ Author Tolkien deleted.
 ### Notes
 If two authors exist with the same last name, the program will prompt you
 to choose which author to delete:
-```bash 
+```shell 
 $ myLib author delete Tolkien
 Two authors exist with last name Tolkien:
 [1] John Tolkien
@@ -195,7 +195,7 @@ Choose which one you want to delete or enter c to cancel.
 Manage genres
 
 ### Usage
-```bash
+```shell
 $ myLib genre [flags] 
 $ myLib genre [command]
 ```
@@ -218,7 +218,7 @@ $ myLib genre [command]
 ## Create a genre
 
 ### Usage
-```bash
+```shell
 $ myLib genre create <name> [flags]
 ``` 
 
@@ -229,7 +229,7 @@ $ myLib genre create <name> [flags]
 
 ### Examples
 Create the genre Fantasy
-```bash
+```shell
 $ myLib genre create Fantasy
 Genre Fantasy created.
 ```
@@ -241,7 +241,7 @@ Genre Fantasy created.
 ## Rename a genre
 
 ### Usage
-```bash
+```shell
 $ myLib genre rename <name> <newName> [flags]
 ```
 
@@ -252,7 +252,7 @@ $ myLib genre rename <name> <newName> [flags]
 
 ### Examples
 Rename the genre "SF" to "Science Fiction"
-```bash
+```shell
 $ myLib genre rename SF "Science Fiction"
 Genre SF renamed as Science Fiction.
 ```
@@ -261,7 +261,7 @@ Genre SF renamed as Science Fiction.
 ## Delete a genre
 
 ### Usage
-```bash
+```shell
 $ myLib genre delete <name> [flags]
 ```
 
@@ -272,7 +272,7 @@ $ myLib genre delete <name> [flags]
 
 ### Examples
 Delete the genre Fantasy
-```bash
+```shell
 $ myLib genre delete Fanatsy
 Genre Fantasy deleted.
 ```
@@ -286,7 +286,7 @@ Genre Fantasy deleted.
 Manage books
 
 ### Usage
-```bash
+```shell
 $ myLib book [command]
 $ myLib book [flags]
 ```
@@ -304,7 +304,7 @@ $ myLib book [flags]
 ```
 
 ### Flags
-```bash
+```shell
   -h, --help		Print help
  ```
 
@@ -314,7 +314,7 @@ $ myLib book [flags]
 ## Create a book
 
 ### Usage
-```bash
+```shell
 $ myLib book create <title> [flags]
 ```
 
@@ -331,21 +331,19 @@ $ myLib book create <title> [flags]
 ### Examples
 
 Create a book with title The Hobbit
-```bash
+```shell
 $ myLib book create "The Hobbit"
-
 Book The Hobbit created.
 ```
 
 Create a book with title The Hobbit with author Tolkien
-```bash
+```shell
 $ myLib book create "The Hobbit" -a Tolkien 
-
 Book The Hobbit created.
 ```
 
 Create a book with all the information possible
-```bash
+```shell
 $ myLib book create "The Hobbit" \
 -a Tolkien -y 1937 \ 
 -d "Also called There and Back Again" \
@@ -363,7 +361,7 @@ A book is identified by its title, authors and edition. If you create a book wit
  
 If you create a book with an author or a genre that does not exist in the database, the program will prompt you with the possibility to create the missing information. 
 
-```bash 
+```shell 
 $ myLib create book "Les Hobbit" -a Tolkien
 The author Tolkien doesn't exist. Do you want to create it? [y,n]
 ```
@@ -373,7 +371,7 @@ If you select "no" the book creation will be cancelled. If you select "yes" an a
 #### Ambiguous author
 If you attempt to create a book with an ambiguous author name, the program will prompt
 you to choose an author:  
-```bash
+```shell
 $ myLib create book "The Hobbit" -a Tolkien
 Two authors exists with last name Tolkien:
 [1] J.R.R Tolkien
@@ -385,7 +383,7 @@ Choose which one you want to use or enter c to cancel.
 ## Update a book
 
 ### Usage
-```bash
+```shell
 $ myLib book update <title> [flags]
  ```
 ### Flags
@@ -401,12 +399,12 @@ $ myLib book update <title> [flags]
 
 ### Examples
 Update the book The Hobbit and set the author to Tolkien
-```bash
+```shell
 $ myLib book update "The Hobbit" -a Tolkien
 Book The Hobbit updated.
 ```
 Update the book "The hobbit" and set the title to "The Hobbit"
-```bash  
+```shell  
 $ myLib book update "The hobbit" -t  "The Hobbit"
 Book The Hobbit updated
 ```
@@ -417,7 +415,7 @@ Book The Hobbit updated
 If you update a book with an author or a genre that does not exist, 
 the program will prompt you with the possibility to create the missing information.
 
-```bash 
+```shell 
 $ myLib update book "The Hobbit" -g Children
 The genre Children doesn't exist. Do you want to create it? [y,n]
 ```
@@ -428,7 +426,7 @@ If you select "yes" a genre with the name Children will be created before the bo
 #### Ambiguous author
 If you attempt to create a book with an ambiguous author name, the program will prompt
 you to choose an author:
-```bash
+```shell
 $ myLib create book "The Hobbit" -a Tolkien
 Two authors exists with last name Tolkien:
 [1] J.R.R Tolkien
@@ -440,7 +438,7 @@ Choose which one you want to use or enter c to cancel.
 ## Delete a book
 
 ### Usage
-```bash
+```shell
 $ myLib book delete <title> [flags] 
 ```
 
@@ -451,7 +449,7 @@ $ myLib book delete <title> [flags]
 
 ### Examples
 Delete the book The Hobbit
-```bash
+```shell
 $ myLib book delete "The Hobbit" 
 Book The Hobbit deleted.
 ```
@@ -459,7 +457,7 @@ Book The Hobbit deleted.
 ### Notes
 If two books exist with the same title, the program will prompt you to choose which book to delete:
 
-```bash 
+```shell 
 $ myLib book delete The Hobbit
 2 books exist with the title The Hobbit:
 [1] The Hobbit by J.R.R Tolkien - 1937 - First Edition
@@ -471,7 +469,7 @@ Choose which one you want to delete or enter c to cancel.
 ## List books
 
 ### Usage
-```bash
+```shell
 $ myLib book list [flags]
 ```
 ### Flags
@@ -486,14 +484,14 @@ $ myLib book list [flags]
 ### Examples
 
 List all the books in the library
-```bash
+```shell
 $ myLib book list
 - Oryx and Crake    Margaret Atwood   2003    Dystopian fiction
 - Ubik              Philip K Dick     1969    Science fiction
 ...
 ```
 List all the books in the library by the author Tolkien
-```bash 
+```shell 
 $ myLib book list -a Tolkien
 - The Hobbit                    J.R.R Tolkien     1937    Fantasy
 - The Fellowship of the Ring    J.R.R Tolkien     1954    Fantasy   
@@ -501,7 +499,7 @@ $ myLib book list -a Tolkien
 ```
 
 List all the books in the library from the year 2000 to the present
-```bash 
+```shell 
 $ myLib book list -f 2000
 - Book1    Author1    2000    Fantasy
 - Book2    Author2    2010    Novel, Science Fiction   
@@ -509,7 +507,7 @@ $ myLib book list -f 2000
 ```
 
 List all the books in the library from 1990 to 1999
-```bash 
+```shell 
 $ myLib book list -f 1990 -t 1999
 - Book1    Author1    1992    Fantasy
 - Book2    Author2    1998    Novel   
@@ -521,7 +519,7 @@ $ myLib book list -f 1990 -t 1999
 #### Ambiguous author
 If you attempt to list books by an ambiguous author name, the program will prompt you
 to choose the author(s) to list:
-```bash
+```shell
 $ myLib list book -a Tolkien
 Two authors exist with last name Tolkien:
 [1] J.R.R Tolkien
@@ -533,7 +531,7 @@ Choose which one you want to use or enter c to cancel.
 ## Add a book to a collection
 
 ### Usage
-```bash
+```shell
 $ myLib book add <title> <collection> [flags] 
 ```
 
@@ -544,7 +542,7 @@ $ myLib book add <title> <collection> [flags]
 
 ### Examples
 Add the book Ubik to the collection "My favorites"
-```bash
+```shell
 $ myLib book insert Ubik "My favorites"
 The book Ubik has been added to the collection My favorites.
 ```
@@ -554,7 +552,7 @@ The book Ubik has been added to the collection My favorites.
 If you try to add a book to a non-existent collection, the program will prompt you
 with the possibility to create the collection. 
 
-```bash
+```shell
 $ myLib book add Ubik "My favorites"
 The collection "My favorites" doesn't exist, do you want to create it? [y/n]
 ```
@@ -564,7 +562,7 @@ will be created and the book added to the collection.
 #### Ambiguous book title
 If you try to add a book with an ambiguous title, the program will prompt you 
 to choose the book to add to the collection:
-```bash
+```shell
 $ myLib book add Ubik "My favorites"
 Two books exist with same title:
 [1] Ubik  Philip K Dick 
@@ -576,7 +574,7 @@ Choose which one you want to use or enter c to cancel.
 ## Remove a book from a collection
 
 ### Usage
-```bash
+```shell
 $ myLib book remove <title> <collection> [flags] 
 ```
 
@@ -587,7 +585,7 @@ $ myLib book remove <title> <collection> [flags]
 
 ### Examples
 Remove the book Ubik from the collection My favorites
-```bash
+```shell
 $ myLib book remove Ubik "My favorites"
 The book Ubik has been removed from the collection "My favorites".
 ```
@@ -595,7 +593,7 @@ The book Ubik has been removed from the collection "My favorites".
 ## Assign a genre to a book
 
 ### Usage
-```bash
+```shell
 $ myLib book assign <title> <genre> [flags] 
 ```
 
@@ -606,7 +604,7 @@ $ myLib book assign <title> <genre> [flags]
 
 ### Examples
 Assign the genre "Science Fiction" to  the book Ubik
-```bash
+```shell
 $ myLib book assign Ubik "Science Fiction"
 The genre Science Fiction been assigned to the book Ubik.
 ```
@@ -614,7 +612,7 @@ The genre Science Fiction been assigned to the book Ubik.
 ## Unassign a genre from a book
 
 ### Usage
-```bash
+```shell
 $ myLib book unassign <title> <genre> [flags] 
 ```
 
@@ -625,7 +623,7 @@ $ myLib book unassign <title> <genre> [flags]
 
 ### Examples
 Unassign the genre "Science Fiction" from the book Ubik
-```bash
+```shell
 $ myLib book unassign Ubik "Science Fiction"
 The genre Science Fiction been unassigned from the book Ubik.
 ```
@@ -637,7 +635,7 @@ The genre Science Fiction been unassigned from the book Ubik.
 Manage collections
 
 ### Usage
-```bash
+```shell
 $ myLib collection [command] 
 $ myLib collection [flags] 
 ```
@@ -662,7 +660,7 @@ $ myLib collection [flags]
 ## Create a collection
 
 ### Usage
-```bash
+```shell
 $ myLib collection create <name> [flags]
 ``` 
 
@@ -673,7 +671,7 @@ $ myLib collection create <name> [flags]
 
 ### Examples
 Create the collection "My favorites"
-```bash
+```shell
 $ myLib collection create "My favorites"
 Collection My favorites created.
 ```
@@ -682,7 +680,7 @@ Collection My favorites created.
 ## Rename a collection
 
 ### Usage
-```bash
+```shell
 $ myLib collection rename <name> <newName> [flags]
 ```
 
@@ -693,7 +691,7 @@ $ myLib collection rename <name> <newName> [flags]
 
 ### Examples
 Rename the collection "My collection" to "My favorites"
-```bash
+```shell
 $ myLib collection rename "My collection" "My favorites"
 Collection My collection renamed to My favorites
 ```
@@ -702,7 +700,7 @@ Collection My collection renamed to My favorites
 ## Delete a collection
 
 ### Usage
-```bash
+```shell
 $ myLib collection delete <name> [flags]
 ```
 
@@ -713,7 +711,7 @@ $ myLib collection delete <name> [flags]
 
 ### Examples
 Delete the collection My Favorites
-```bash
+```shell
 $ myLib collection delete "My Favorites" 
 Collection "My favorites" deleted
 ```
@@ -724,7 +722,7 @@ Collection "My favorites" deleted
 If you try to delete a collection that contains books, the program will prompt you
 to confirm the deletion.
 
-```bash
+```shell
 $ myLib collection delete "My favorites"
 The collection "My favorites" contains 5 books. 
 Do you still want to delete the collection? (The books won't be deleted) [y/n]
@@ -733,7 +731,7 @@ Do you still want to delete the collection? (The books won't be deleted) [y/n]
 ## List collections
 
 ### Usage
-```bash
+```shell
 $ myLib collection list [flags]
 ```
 ### Flags
@@ -743,7 +741,7 @@ $ myLib collection list [flags]
 ### Examples
 
 List all the collections 
-```bash
+```shell
 $ myLib collection list
 - My Favorites
 - Study books
@@ -756,7 +754,7 @@ $ myLib collection list
 ## Add a book to a collection
 
 ### Usage
-```bash
+```shell
 $ myLib collection add <collection> <title> [flags]
 ```
 
@@ -767,7 +765,7 @@ $ myLib collection add <collection> <title> [flags]
 
 ### Examples
 Add the book Ubik to the collection My favorites
-```bash
+```shell
 $ myLib collection add "My favorites" Ubik
 The book Ubik has been added to the collection "My favorites".
 ```
@@ -777,7 +775,7 @@ The book Ubik has been added to the collection "My favorites".
 If you try to add a book to a non-existent collection, the program will prompt you
 with the possibility to create the collection.
 
-```bash
+```shell
 $ myLib collection add "My favorites" Ubik
 The collection "My favorites" doesn't exist, do you want to create it? [y/n]
 ```
@@ -788,7 +786,7 @@ will be created and the book added to the collection.
 #### Ambiguous book title
 If you try to add a book with an ambiguous title, the program will prompt you
  to choose the book to add to the collection:
-```bash
+```shell
 $ myLib book add Ubik "My favorites"
 2 books exist with same title:
 [1] Ubik  Philip K Dick 
@@ -799,7 +797,7 @@ Choose which one you want to use or enter c to cancel.
 ## Remove a book from a collection
 
 ### Usage
-```bash
+```shell
 $ myLib collection remove <collection> <title> [flags]
 ```
 
@@ -810,7 +808,7 @@ $ myLib collection remove <collection> <title> [flags]
 
 ### Examples
 Remove the book Ubik from the collection My favorites
-```bash
+```shell
 $ myLib collection remove "My favorites" Ubik
 The book Ubik has been removed from the collection "My favorites".
 ```
