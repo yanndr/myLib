@@ -38,11 +38,18 @@ func (q *Queries) DeleteAuthor(ctx context.Context, id int64) error {
 }
 
 const getAllAuthors = `-- name: GetAllAuthors :many
-SELECT id, first_name, last_name, middle_name FROM authors ORDER BY last_name
+SELECT id, first_name, last_name, middle_name FROM authors
+         ORDER BY last_name
+         LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetAllAuthors(ctx context.Context) ([]Author, error) {
-	rows, err := q.db.QueryContext(ctx, getAllAuthors)
+type GetAllAuthorsParams struct {
+	Limit  int64
+	Offset int64
+}
+
+func (q *Queries) GetAllAuthors(ctx context.Context, arg GetAllAuthorsParams) ([]Author, error) {
+	rows, err := q.db.QueryContext(ctx, getAllAuthors, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

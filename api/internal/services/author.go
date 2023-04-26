@@ -28,7 +28,7 @@ type authorService struct {
 	service
 }
 
-func NewAuthorService(db *sql.DB, queries *db.Queries, validator Validator, logger Logger) AuthorService {
+func NewAuthorService(db *sql.DB, queries db.AuthorQueries, validator Validator, logger Logger) AuthorService {
 	return &authorService{
 		service: newService(db, queries, validator, logger),
 	}
@@ -41,7 +41,7 @@ func (s *authorService) Create(ctx context.Context, author api.AuthorBase) (int6
 	}
 
 	var id int64
-	err := s.transaction(func(q *db.Queries) error {
+	err := s.transaction(func(q db.AllQueries) error {
 		authorDb, err := q.GetUniqueAuthor(ctx, toGetUniqueAuthorParams(author))
 		if err != nil && err != sql.ErrNoRows {
 			s.logger.Printf("Create - query call error: %s", err)
@@ -64,7 +64,7 @@ func (s *authorService) Create(ctx context.Context, author api.AuthorBase) (int6
 
 func (s *authorService) GetById(ctx context.Context, id int64) (api.Author, error) {
 	var author api.Author
-	err := s.transaction(func(q *db.Queries) error {
+	err := s.transaction(func(q db.AllQueries) error {
 
 		dbAuthor, err := q.GetAuthorById(ctx, id)
 		if err != nil {
@@ -86,7 +86,7 @@ func (s *authorService) GetById(ctx context.Context, id int64) (api.Author, erro
 }
 
 func (s *authorService) Delete(ctx context.Context, id int64) error {
-	err := s.transaction(func(q *db.Queries) error {
+	err := s.transaction(func(q db.AllQueries) error {
 		_, err := q.GetAuthorById(ctx, id)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -119,7 +119,11 @@ func (s *authorService) GetAll(ctx context.Context, nameFilter string) ([]api.Au
 	if nameFilter != "" {
 		authors, err = s.queries.GetAllAuthorsWithName(ctx, nameFilter)
 	} else {
-		authors, err = s.queries.GetAllAuthors(ctx)
+		p := db.GetAllAuthorsParams{
+			Limit:  100,
+			Offset: 0,
+		}
+		authors, err = s.queries.GetAllAuthors(ctx, p)
 	}
 
 	if err != nil && err != sql.ErrNoRows {
@@ -156,7 +160,7 @@ func (s *authorService) PartialUpdate(ctx context.Context, id int64, patchReques
 }
 
 func (s *authorService) update(ctx context.Context, id int64, author api.AuthorBase, updateFunc func(*db.Author)) error {
-	err := s.transaction(func(q *db.Queries) error {
+	err := s.transaction(func(q db.AllQueries) error {
 		dbAuthor, err := q.GetAuthorById(ctx, id)
 		if err != nil {
 			if err == sql.ErrNoRows {
