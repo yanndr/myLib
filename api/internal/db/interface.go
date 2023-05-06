@@ -6,7 +6,7 @@ import (
 )
 
 type dbQueries interface {
-	WithTx(tx *sql.Tx) AllQueries
+	WithTx(tx *sql.Tx) *Queries
 }
 
 type AuthorQueries interface {

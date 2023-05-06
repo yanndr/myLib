@@ -3,6 +3,7 @@ package main
 import (
 	"api/internal/db"
 	"api/internal/endpoints"
+	"api/internal/middlewares"
 	"api/internal/services"
 	apisql "api/sql"
 	"context"
@@ -10,6 +11,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net/http"
 	"os"
@@ -67,6 +69,7 @@ func run(port int, configDir, dbName string) error {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(10 * time.Second))
+	r.Method(http.MethodGet, "/metrics", promhttp.Handler())
 	r.Get("/", endpoints.RootResponse)
 	createRoutes(r, endpoints.NewV1Route(Version, authSvc))
 
@@ -111,7 +114,7 @@ func run(port int, configDir, dbName string) error {
 func createRoutes(router chi.Router, endpoint *endpoints.Route) {
 	router.Route(endpoint.Pattern, func(r chi.Router) {
 		for method, action := range endpoint.Actions {
-			r.Method(method, "/", http.HandlerFunc(endpoints.Handle(action)))
+			r.With(middlewares.PrometheusMiddleware).Method(method, "/", http.HandlerFunc(endpoints.Handle(action)))
 		}
 		if endpoint.SubRoutes != nil {
 			for _, e := range endpoint.SubRoutes {
