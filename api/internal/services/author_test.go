@@ -24,18 +24,18 @@ func setupTest(t testing.TB) func(t testing.TB) {
 	mockAuthorQueries = NewMockAuthorQueries(ctrl)
 	mockValidator = NewMockValidator(ctrl)
 
-	var db *sql.DB
+	var database *sql.DB
 	var err error
-	db, sqlMock, err = sqlmock.New()
+	database, sqlMock, err = sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%authorSvc' was not expected when opening a stub database connection", err)
 	}
 
-	authorSvc = NewAuthorService(db, mockAuthorQueries, mockValidator, &log.Logger{})
+	authorSvc = NewAuthorService(database, mockAuthorQueries, mockValidator, &log.Logger{})
 
 	return func(t testing.TB) {
 		log.Println("teardown test")
-		db.Close()
+		database.Close()
 	}
 }
 
