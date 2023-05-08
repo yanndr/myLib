@@ -17,7 +17,7 @@ type AuthorService interface {
 	// Delete deletes an author.
 	Delete(ctx context.Context, id int64) error
 	// GetAll returns the list of all authors.
-	GetAll(ctx context.Context, nameFilter string) ([]api.Author, error)
+	GetAll(ctx context.Context, nameFilter string, limit, offset int64) ([]api.Author, error)
 	// Update updates an author.
 	Update(ctx context.Context, id int64, author api.AuthorBase) error
 	// PartialUpdate partially updates an author.
@@ -113,15 +113,18 @@ func (s *authorService) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *authorService) GetAll(ctx context.Context, nameFilter string) ([]api.Author, error) {
+func (s *authorService) GetAll(ctx context.Context, nameFilter string, limit, offset int64) ([]api.Author, error) {
 	var authors []db.Author
 	var err error
+	if limit == 0 {
+		limit = -1
+	}
 	if nameFilter != "" {
 		authors, err = s.queries.GetAllAuthorsWithName(ctx, nameFilter)
 	} else {
 		p := db.GetAllAuthorsParams{
-			Limit:  100,
-			Offset: 0,
+			Limit:  limit,
+			Offset: offset,
 		}
 		authors, err = s.queries.GetAllAuthors(ctx, p)
 	}

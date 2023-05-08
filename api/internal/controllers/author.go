@@ -71,8 +71,18 @@ func (c *AuthorController) Delete(r *http.Request) (api.Response, error) {
 // GetAll is the endpoint action for the GET method to retrieve the list of authors.
 func (c *AuthorController) GetAll(r *http.Request) (api.Response, error) {
 	lastname := r.URL.Query().Get("lastname")
+	limitStr := r.URL.Query().Get("limit")
+	offsetStr := r.URL.Query().Get("offset")
+	limit, err := strconv.ParseInt(limitStr, 10, 64)
+	if err != nil {
+		//log
+	}
+	offset, err := strconv.ParseInt(offsetStr, 10, 64)
+	if err != nil {
+		//log
+	}
 
-	authors, err := c.AuthorService.GetAll(r.Context(), lastname)
+	authors, err := c.AuthorService.GetAll(r.Context(), lastname, limit, offset)
 	if err != nil {
 		return handleServiceError(err)
 	}

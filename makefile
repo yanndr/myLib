@@ -1,4 +1,4 @@
-VERSION=`cat ../.version`
+VERSION=$(shell cat .version)
 LDFLAGS=-ldflags "-X main.Version=${VERSION}"
 
 .PHONY: api
