@@ -36,7 +36,6 @@ func setupTest(t testing.TB) func(t testing.TB) {
 	return func(t testing.TB) {
 		log.Println("teardown test")
 		db.Close()
-
 	}
 }
 

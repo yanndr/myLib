@@ -5,9 +5,7 @@ import (
 	"api/internal/endpoints"
 	"api/internal/middlewares"
 	"api/internal/services"
-	apisql "api/sql"
 	"context"
-	"database/sql"
 	"errors"
 	"flag"
 	"fmt"
@@ -57,7 +55,7 @@ func run(port int, configDir, dbName string) error {
 		}
 	}
 
-	database, err := openDatabase(path.Join(configDir, dbName))
+	database, err := db.OpenDatabase(path.Join(configDir, dbName))
 	if err != nil {
 		return err
 	}
@@ -122,23 +120,4 @@ func createRoutes(router chi.Router, endpoint *endpoints.Route) {
 			}
 		}
 	})
-}
-
-func openDatabase(dbPath string) (*sql.DB, error) {
-	newDb := false
-	if _, err := os.Stat(dbPath); errors.Is(err, os.ErrNotExist) {
-		newDb = true
-	}
-	database, err := sql.Open("sqlite3", fmt.Sprintf("%s?_foreign_keys=on", dbPath))
-	if err != nil {
-		return nil, err
-	}
-
-	if newDb {
-		if _, err := database.ExecContext(context.Background(), apisql.Schema); err != nil {
-			return nil, err
-		}
-	}
-
-	return database, nil
 }

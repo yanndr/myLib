@@ -37,10 +37,10 @@ func (m *MockdbQueries) EXPECT() *MockdbQueriesMockRecorder {
 }
 
 // WithTx mocks base method.
-func (m *MockdbQueries) WithTx(tx *sql.Tx) db.AllQueries {
+func (m *MockdbQueries) WithTx(tx *sql.Tx) *db.Queries {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithTx", tx)
-	ret0, _ := ret[0].(db.AllQueries)
+	ret0, _ := ret[0].(*db.Queries)
 	return ret0
 }
 
@@ -177,10 +177,10 @@ func (mr *MockAuthorQueriesMockRecorder) UpdateAuthor(ctx, arg interface{}) *gom
 }
 
 // WithTx mocks base method.
-func (m *MockAuthorQueries) WithTx(tx *sql.Tx) db.AllQueries {
+func (m *MockAuthorQueries) WithTx(tx *sql.Tx) *db.Queries {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithTx", tx)
-	ret0, _ := ret[0].(db.AllQueries)
+	ret0, _ := ret[0].(*db.Queries)
 	return ret0
 }
 
@@ -317,10 +317,10 @@ func (mr *MockAllQueriesMockRecorder) UpdateAuthor(ctx, arg interface{}) *gomock
 }
 
 // WithTx mocks base method.
-func (m *MockAllQueries) WithTx(tx *sql.Tx) db.AllQueries {
+func (m *MockAllQueries) WithTx(tx *sql.Tx) *db.Queries {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithTx", tx)
-	ret0, _ := ret[0].(db.AllQueries)
+	ret0, _ := ret[0].(*db.Queries)
 	return ret0
 }
 
