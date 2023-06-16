@@ -1,6 +1,7 @@
 # myLib program
 
 ## Description
+I wrote this sample program to demonstrate my skills in Go and REST API development.
 
 myLib is a program divided into two projects, a REST API and a CLI client.
 
