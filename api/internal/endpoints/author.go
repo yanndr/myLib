@@ -34,7 +34,6 @@ func newAuthorEndpoint(c controllers.AuthorController) *Route {
 		},
 		SubRoutes: []*Route{&authorBooksEndpoint},
 	}
-
 }
 
 var authorBooksEndpoint = Route{

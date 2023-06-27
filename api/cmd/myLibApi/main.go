@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -71,7 +72,18 @@ func run(port int, configDir, dbName string) error {
 	r.Get("/", endpoints.RootResponse)
 	createRoutes(r, endpoints.NewV1Route(Version, authSvc))
 
+	return startServer(port, r, err)
+}
+
+const socketPath = "/tmp/mylib.sock"
+
+func startServer(port int, r http.Handler, err error) error {
 	server := &http.Server{Addr: fmt.Sprintf(":%v", port), Handler: r}
+
+	socket, err := net.Listen("unix", socketPath)
+	if err != nil {
+		return err
+	}
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
@@ -80,6 +92,7 @@ func run(port int, configDir, dbName string) error {
 	go func() {
 		<-sig
 		log.Println("Stopping the server...")
+		os.Remove(socketPath)
 		// Shutdown signal with grace period of 30 seconds
 		shutdownCtx, cancel := context.WithTimeout(serverCtx, 30*time.Second)
 		defer cancel()
@@ -98,6 +111,14 @@ func run(port int, configDir, dbName string) error {
 		}
 		serverStopCtx()
 	}()
+
+	go func() {
+		fmt.Printf("Server started, listening on socket: %v\n", socketPath)
+		if err := server.Serve(socket); err != nil {
+			fmt.Println("cannot listen on socket")
+		}
+	}()
+
 	fmt.Printf("Server started, listening on port: %v\n", port)
 	err = server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
